@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0b09">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KERA INCO">
+<meta name="mobile-web-app-capable" content="yes">
+<title>KERA CATERING — Gestionnaire INCO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0c0b09;--s1:#161512;--s2:#1e1d1a;--s3:#252420;
+  --b1:#2a2825;--b2:#3a3835;
+  --gold:#c9a84c;--gold2:#e8c96d;--gold3:#8a6f2e;--goldA:rgba(201,168,76,.10);
+  --text:#ede9e0;--mut:#8a8680;--dim:#4a4844;
+  --red:#e05252;--green:#52b788;--orange:#e09452;--blue:#5b8fd4;
+  --r:10px;--rs:7px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px}
+body{display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+#header{background:var(--s1);border-bottom:1px solid var(--b1);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;safe-area-inset-top:env(safe-area-inset-top)}
+.brand{font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);line-height:1}
+.brand small{display:block;font-family:'DM Sans',sans-serif;font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.14em;font-weight:500;margin-top:2px}
+.sync-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--goldA);color:var(--gold)}
+
+/* ── CONTENT ── */
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+
+/* ── BOTTOM NAV ── */
+#nav{background:var(--s1);border-top:1px solid var(--b1);display:flex;position:fixed;bottom:0;left:0;right:0;padding-bottom:env(safe-area-inset-bottom);z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;position:relative;border:none;background:none;color:var(--dim)}
+.nav-btn.active{color:var(--gold)}
+.nav-btn .ni{font-size:20px;margin-bottom:2px}
+.nav-btn .nl{font-size:9px;font-weight:600}
+.nav-btn .active-bar{position:absolute;top:0;left:20%;right:20%;height:2px;background:var(--gold);border-radius:1px}
+.nav-alert{position:absolute;top:5px;right:18%;background:var(--red);color:#fff;font-size:8px;font-weight:700;border-radius:10px;padding:1px 4px;min-width:14px;text-align:center}
+
+/* ── PAGE ── */
+.page{padding:16px;display:none;animation:fi .2s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:10px}
+.ph-t{font-family:'Playfair Display',serif;font-size:22px;color:var(--text)}
+.ph-s{font-size:11px;color:var(--mut);margin-top:2px}
+.ph-a{display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card-s2{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:10px;margin-bottom:8px}
+.ct{font-family:'Playfair Display',serif;font-size:15px;color:var(--gold);margin-bottom:12px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px}
+.stat-v{font-family:'Playfair Display',serif;font-size:28px;line-height:1}
+.stat-l{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:8px 14px;border-radius:var(--rs);border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap;-webkit-appearance:none}
+.btn-gold{background:var(--gold);color:#000}
+.btn-gold:active{background:var(--gold2)}
+.btn-out{background:transparent;border:1px solid var(--b2);color:var(--mut)}
+.btn-out:active{border-color:var(--gold3);color:var(--text)}
+.btn-red{background:rgba(224,82,82,.12);border:1px solid rgba(224,82,82,.3);color:var(--red)}
+.btn-green{background:rgba(82,183,136,.12);border:1px solid rgba(82,183,136,.3);color:var(--green)}
+.btn-ghost{background:transparent;border:none;color:var(--mut);padding:6px}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-xs{padding:3px 7px;font-size:10px}
+.btn-full{width:100%}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.bg{background:rgba(201,168,76,.15);color:var(--gold)}
+.br{background:rgba(224,82,82,.15);color:var(--red)}
+.bv{background:rgba(82,183,136,.15);color:var(--green)}
+.bo{background:rgba(224,148,82,.15);color:var(--orange)}
+.bb{background:rgba(91,143,212,.15);color:var(--blue)}
+
+/* ── FORMS ── */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:10px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+.inp,.sel,.ta{width:100%;background:var(--bg);border:1px solid var(--b1);border-radius:var(--rs);color:var(--text);padding:9px 12px;font-family:'DM Sans',sans-serif;font-size:14px;outline:none;-webkit-appearance:none;appearance:none}
+.inp:focus,.sel:focus,.ta:focus{border-color:var(--gold3)}
+.ta{min-height:70px;resize:vertical}
+.sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8680' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+/* ── LIST ITEMS ── */
+.list-item{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.list-item:active{border-color:var(--gold3)}
+.list-item.sel{border-color:var(--gold);background:var(--goldA)}
+.li-name{font-weight:600;font-size:14px;margin-bottom:3px}
+.li-meta{font-size:10px;color:var(--mut);margin-bottom:6px}
+.badges-row{display:flex;flex-wrap:wrap;gap:4px}
+
+/* ── ROW ITEMS ── */
+.row-item{display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:8px 10px;margin-bottom:5px}
+.ri-main{flex:1;min-width:0}
+.ri-name{font-size:12px;font-weight:500}
+.ri-sub{font-size:9px;color:var(--gold3)}
+
+/* ── NUTRI ── */
+.nutri-big{background:var(--s2);border-radius:8px;padding:14px;text-align:center;margin-bottom:12px}
+.nb-v{font-family:'Playfair Display',serif;font-size:36px;color:var(--gold);line-height:1}
+.nb-u{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+.nutri-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1);font-size:12px}
+.nutri-row.sub{padding-left:14px;color:var(--mut)}
+.nutri-row span:last-child{color:var(--gold2);font-weight:600}
+
+/* ── ETIQUETTE BLANCHE ── */
+.etiq{background:#fff;color:#000;border-radius:8px;padding:14px;font-family:Arial,sans-serif;font-size:10px;line-height:1.4;margin-bottom:12px}
+.etiq-nom{font-size:15px;font-weight:800;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px}
+.etiq-sec{margin-bottom:8px}
+.etiq-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#555;margin-bottom:3px}
+.etiq-allerg{background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:5px 7px;font-size:8px;font-weight:700}
+.etiq-nutri{border:1px solid #ccc;border-radius:3px;overflow:hidden}
+.etiq-nutri-h{background:#111;color:#fff;padding:4px 7px;font-size:8px;font-weight:700;text-transform:uppercase}
+.etiq-nutri-r{display:flex;justify-content:space-between;padding:3px 7px;border-top:1px solid #eee;font-size:8px}
+.etiq-nutri-r.sub{padding-left:16px;color:#666}
+.etiq-footer{font-size:7px;color:#777;border-top:1px solid #ddd;margin-top:7px;padding-top:5px}
+
+/* ── ALLERG GRID ── */
+.allerg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.ac{background:var(--s2);border:1px solid var(--b1);border-radius:5px;padding:7px 4px;text-align:center;font-size:9px;color:var(--dim);line-height:1.3}
+.ac.on{background:rgba(201,168,76,.12);border-color:var(--gold3);color:var(--gold);font-weight:700}
+
+/* ── CHECKLIST ── */
+.chk-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--b1)}
+.chk-item:last-child{border:none}
+.chk-ok{color:var(--green);font-size:16px;width:20px;text-align:center}
+.chk-no{color:var(--red);font-size:16px;width:20px;text-align:center}
+
+/* ── PROGRESS ── */
+.prog{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin-top:5px}
+.prog-f{height:100%;border-radius:3px;transition:width .3s}
+
+/* ── AUTOCOMPLETE ── */
+.ac-wrap{position:relative}
+.ac-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--s1);border:1px solid var(--b2);border-radius:var(--rs);z-index:50;max-height:180px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.ac-item{padding:10px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid var(--b1)}
+.ac-item:active{background:var(--s2)}
+.ac-item:last-child{border:none}
+.ac-al{font-size:9px;color:var(--gold3);margin-top:2px}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end}
+.modal-bg.open{display:flex}
+.modal{background:var(--s1);border-radius:16px 16px 0 0;padding:20px;width:100%;max-height:90vh;overflow-y:auto;animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;color:var(--gold);margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+
+/* ── LOT CARD ── */
+.lot-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:13px;margin-bottom:10px}
+.lot-exp{border-color:var(--red)!important;background:rgba(224,82,82,.04)!important}
+.lot-warn{border-color:var(--orange)!important;background:rgba(224,148,82,.04)!important}
+
+/* ── COST BARS ── */
+.cost-row{margin-bottom:8px}
+.cost-bar-bg{height:4px;background:var(--s3);border-radius:2px;margin-top:3px}
+.cost-bar-f{height:4px;background:var(--gold);border-radius:2px}
+
+/* ── INSTALL BANNER ── */
+#install-banner{background:linear-gradient(135deg,var(--s1),var(--s2));border:1px solid var(--gold3);border-radius:var(--r);padding:12px 14px;margin:12px 16px 0;display:none;align-items:center;gap:10px}
+#install-banner.show{display:flex}
+.ib-icon{font-size:24px;flex-shrink:0}
+.ib-text{flex:1;font-size:11px;color:var(--mut);line-height:1.4}
+.ib-text strong{color:var(--gold);display:block;font-size:12px;margin-bottom:2px}
+
+/* ── HR ── */
+hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--mut);font-size:13px}
+
+/* ── SEARCH ── */
+.search-bar{display:flex;gap:8px;margin-bottom:12px}
+.search-bar .inp{flex:1}
+
+/* ── ING GRID (pour la base ingrédients) ── */
+.ing-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ing-card{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:10px;cursor:pointer}
+.ing-card:active{border-color:var(--gold3)}
+
+/* ── COÛT SUMMARY ── */
+.cout-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1);font-size:12px}
+.cout-row:last-child{border:none;font-weight:700;font-size:13px}
+.cout-row span:last-child{color:var(--gold)}
+
+/* ── DETAIL VIEW BACK ── */
+.back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--gold);font-size:13px;margin-bottom:14px;cursor:pointer;background:none;border:none}
+
+/* scroll hint fade */
+#content::after{content:'';position:fixed;bottom:64px;left:0;right:0;height:20px;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div class="brand">KERA CATERING<small>Gestionnaire INCO</small></div>
+  <div class="sync-badge" id="sync-badge">📱 Local</div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner">
+  <div class="ib-icon">📲</div>
+  <div class="ib-text">
+    <strong>Installer l'application</strong>
+    Ajoute KERA INCO sur ton écran d'accueil pour un accès rapide, même hors ligne.
+  </div>
+  <button class="btn btn-gold btn-sm" id="install-btn">Installer</button>
+</div>
+
+<!-- CONTENU -->
+<div id="content">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div class="page active" id="page-dashboard">
+    <div style="padding:16px 0 0">
+      <div style="padding:0 16px">
+        <div class="ph-t">Tableau de bord</div>
+        <div class="ph-s" style="margin-bottom:14px">KERA CATERING — Gestionnaire INCO</div>
+      </div>
+      <div style="padding:0 16px">
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="card" id="dash-recettes"></div>
+        <div class="card" id="dash-alertes" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RECETTES ══ -->
+  <div class="page" id="page-recettes">
+    <div id="rec-list-view">
+      <div class="ph" style="padding-top:4px">
+        <div><div class="ph-t">Recettes</div></div>
+        <button class="btn btn-gold btn-sm" onclick="showRecForm(null)">+ Nouvelle</button>
+      </div>
+      <div class="search-bar">
+        <input class="inp" id="rec-search" placeholder="Rechercher…" oninput="renderRecList()">
+      </div>
+      <div id="rec-list"></div>
+    </div>
+    <div id="rec-detail-view" style="display:none"></div>
+    <div id="rec-form-view" style="display:none"></div>
+  </div>
+
+  <!-- ══ ÉTIQUETTE ══ -->
+  <div class="page" id="page-etiquette">
+    <div class="ph" style="padding-top:4px">
+      <div><div class="ph-t">Étiquette INCO</div><div class="ph-s">Règlement UE 1169/2011</div></div>
+    </div>
+    <div class="field">
+      <label>Sélectionner une recette</label>
+      <select class="sel" id="etiq-sel" onchange="renderEtiquette()"></select>
+    </div>
+    <div id="etiq-content"></div>
+  </div>
+
+  <!-- ══ INGRÉDIENTS ══ -->
+  <div class="page" id="page-ingredients">
+    <div id="ing-list-view">
+      <div class="ph" style="padding-top:4px">
+        <div><div class="ph-t">Ingrédients</div><div class="ph-s" id="ing-count"></div></div>
+        <button class="btn btn-gold btn-sm" onclick="showIngForm(null)">+ Ajouter</button>
+      </div>
+      <div class="search-bar">
+        <input class="inp" id="ing-search" placeholder="Rechercher…" oninput="renderIngList()">
+        <select class="sel" id="ing-cat-filter" style="width:130px" onchange="renderIngList()">
+          <option value="">Toutes</option>
+        </select>
+      </div>
+      <div id="ing-grid-container"></div>
+    </div>
+    <div id="ing-form-view" style="display:none"></div>
+  </div>
+
+  <!-- ══ TRAÇABILITÉ ══ -->
+  <div class="page" id="page-tracabilite">
+    <div class="ph" style="padding-top:4px">
+      <div><div class="ph-t">Traçabilité</div><div class="ph-s" id="lot-sub"></div></div>
+      <button class="btn btn-gold btn-sm" onclick="showLotModal(null)">+ Lot</button>
+    </div>
+    <div id="lot-list"></div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="nav">
+  <button class="nav-btn active" onclick="goTab('dashboard')" id="nav-dashboard">
+    <div class="ni">📊</div><div class="nl">Dashboard</div>
+    <div class="active-bar"></div>
+  </button>
+  <button class="nav-btn" onclick="goTab('recettes')" id="nav-recettes">
+    <div class="ni">🍽</div><div class="nl">Recettes</div>
+  </button>
+  <button class="nav-btn" onclick="goTab('etiquette')" id="nav-etiquette">
+    <div class="ni">🏷</div><div class="nl">Étiquette</div>
+  </button>
+  <button class="nav-btn" onclick="goTab('ingredients')" id="nav-ingredients">
+    <div class="ni">🌿</div><div class="nl">Ingrédients</div>
+  </button>
+  <button class="nav-btn" onclick="goTab('tracabilite')" id="nav-tracabilite">
+    <div class="ni">📦</div><div class="nl">Lots</div>
+  </button>
+</div>
+
+<!-- MODAL LOT -->
+<div class="modal-bg" id="lot-modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span id="lot-modal-title">Nouveau lot</span>
+      <button class="btn-ghost" onclick="closeLotModal()">✕</button>
+    </div>
+    <div id="lot-form"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// DONNÉES
+// ═══════════════════════════════════════════════════
+const AL = {
+  gluten:'Gluten',crustaces:'Crustacés',oeufs:'Œufs',poisson:'Poisson',
+  arachides:'Arachides',soja:'Soja',lait:'Lait',fruits_a_coque:'Fruits à coque',
+  celeri:'Céleri',moutarde:'Moutarde',sesame:'Sésame',sulfites:'Sulfites/SO₂',
+  lupin:'Lupin',mollusques:'Mollusques'
+};
+const AL_KEYS = Object.keys(AL);
+
+const INGS_DEFAUT = [
+  {id:1,nom:'Farine de blé T55',unite:'g',categorie:'Céréales',allergenes:['gluten'],kcal:3.64,proteines:0.10,glucides:0.76,lipides:0.01,sel:0.001,sucres:0.003,agSat:0.001,prixKg:0.90},
+  {id:2,nom:'Œufs entiers',unite:'g',categorie:'Œufs',allergenes:['oeufs'],kcal:1.55,proteines:0.13,glucides:0.01,lipides:0.11,sel:0.0014,sucres:0.005,agSat:0.032,prixKg:3.50},
+  {id:3,nom:'Lait entier',unite:'ml',categorie:'Laitier',allergenes:['lait'],kcal:0.63,proteines:0.032,glucides:0.048,lipides:0.036,sel:0.001,sucres:0.048,agSat:0.023,prixKg:0.85},
+  {id:4,nom:'Beurre doux',unite:'g',categorie:'Laitier',allergenes:['lait'],kcal:7.45,proteines:0.005,glucides:0.006,lipides:0.82,sel:0.014,sucres:0.006,agSat:0.52,prixKg:8.50},
+  {id:5,nom:'Sucre blanc',unite:'g',categorie:'Sucres',allergenes:[],kcal:4.0,proteines:0,glucides:1.0,lipides:0,sel:0,sucres:1.0,agSat:0,prixKg:0.95},
+  {id:6,nom:'Poulet filet',unite:'g',categorie:'Viandes',allergenes:[],kcal:1.65,proteines:0.22,glucides:0,lipides:0.08,sel:0.0011,sucres:0,agSat:0.023,prixKg:9.50},
+  {id:7,nom:'Saumon frais',unite:'g',categorie:'Poissons',allergenes:['poisson'],kcal:2.06,proteines:0.20,glucides:0,lipides:0.13,sel:0.001,sucres:0,agSat:0.028,prixKg:18.00},
+  {id:8,nom:'Crevettes décortiquées',unite:'g',categorie:'Poissons',allergenes:['crustaces'],kcal:0.85,proteines:0.18,glucides:0.001,lipides:0.01,sel:0.002,sucres:0,agSat:0.003,prixKg:22.00},
+  {id:9,nom:'Crème fraîche 30%',unite:'ml',categorie:'Laitier',allergenes:['lait'],kcal:2.92,proteines:0.025,glucides:0.036,lipides:0.30,sel:0.001,sucres:0.036,agSat:0.19,prixKg:3.80},
+  {id:10,nom:"Huile d'olive",unite:'ml',categorie:'Graisses',allergenes:[],kcal:8.84,proteines:0,glucides:0,lipides:1.0,sel:0,sucres:0,agSat:0.138,prixKg:7.50},
+  {id:11,nom:'Tomates fraîches',unite:'g',categorie:'Légumes',allergenes:[],kcal:0.18,proteines:0.009,glucides:0.035,lipides:0.002,sel:0.0005,sucres:0.027,agSat:0,prixKg:2.20},
+  {id:12,nom:'Oignons',unite:'g',categorie:'Légumes',allergenes:[],kcal:0.40,proteines:0.011,glucides:0.093,lipides:0.001,sel:0.0005,sucres:0.045,agSat:0,prixKg:1.20},
+  {id:13,nom:'Pommes de terre',unite:'g',categorie:'Légumes',allergenes:[],kcal:0.77,proteines:0.02,glucides:0.17,lipides:0.001,sel:0.0005,sucres:0.008,agSat:0,prixKg:1.10},
+  {id:14,nom:'Ail',unite:'g',categorie:'Légumes',allergenes:[],kcal:1.49,proteines:0.064,glucides:0.33,lipides:0.005,sel:0.001,sucres:0.01,agSat:0,prixKg:4.50},
+  {id:15,nom:'Carottes',unite:'g',categorie:'Légumes',allergenes:[],kcal:0.41,proteines:0.009,glucides:0.096,lipides:0.002,sel:0.001,sucres:0.048,agSat:0,prixKg:0.90},
+  {id:16,nom:'Parmesan',unite:'g',categorie:'Laitier',allergenes:['lait'],kcal:4.31,proteines:0.38,glucides:0.003,lipides:0.29,sel:0.017,sucres:0,agSat:0.19,prixKg:18.50},
+  {id:17,nom:'Moutarde Dijon',unite:'g',categorie:'Condiments',allergenes:['moutarde'],kcal:0.66,proteines:0.04,glucides:0.06,lipides:0.04,sel:0.02,sucres:0.01,agSat:0.003,prixKg:4.20},
+  {id:18,nom:'Amandes effilées',unite:'g',categorie:'Fruits secs',allergenes:['fruits_a_coque'],kcal:5.76,proteines:0.21,glucides:0.22,lipides:0.49,sel:0.001,sucres:0.044,agSat:0.037,prixKg:14.00},
+  {id:19,nom:'Sel fin',unite:'g',categorie:'Condiments',allergenes:[],kcal:0,proteines:0,glucides:0,lipides:0,sel:0.39,sucres:0,agSat:0,prixKg:0.50},
+  {id:20,nom:'Poivre noir',unite:'g',categorie:'Condiments',allergenes:[],kcal:2.51,proteines:0.10,glucides:0.64,lipides:0.033,sel:0.02,sucres:0,agSat:0.01,prixKg:12.00},
+  {id:21,nom:'Sauce soja',unite:'ml',categorie:'Condiments',allergenes:['soja','gluten'],kcal:0.60,proteines:0.08,glucides:0.06,lipides:0.007,sel:0.056,sucres:0.02,agSat:0.001,prixKg:3.50},
+  {id:22,nom:'Céleri branche',unite:'g',categorie:'Légumes',allergenes:['celeri'],kcal:0.17,proteines:0.007,glucides:0.03,lipides:0.002,sel:0.002,sucres:0.018,agSat:0,prixKg:2.80},
+  {id:23,nom:'Fromage blanc 0%',unite:'g',categorie:'Laitier',allergenes:['lait'],kcal:0.45,proteines:0.08,glucides:0.038,lipides:0.001,sel:0.002,sucres:0.038,agSat:0,prixKg:2.90},
+  {id:24,nom:'Farine de riz',unite:'g',categorie:'Céréales',allergenes:[],kcal:3.66,proteines:0.063,glucides:0.80,lipides:0.006,sel:0,sucres:0,agSat:0,prixKg:2.50},
+  {id:25,nom:'Levure boulangère',unite:'g',categorie:'Divers',allergenes:[],kcal:0.53,proteines:0,glucides:0.27,lipides:0,sel:0.065,sucres:0,agSat:0,prixKg:5.00},
+];
+
+// ═══════════════════════════════════════════════════
+// STATE (localStorage)
+// ═══════════════════════════════════════════════════
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
+
+let recettes = load('kera_recettes',[{
+  id:1,nom:'Gratin Dauphinois',description:'Gratin de pommes de terre à la crème fraîche',
+  categorie:'Plat chaud',portions:4,portionPoids:200,dlc:3,
+  conditionStockage:'Conserver entre 0°C et 4°C',
+  fabricant:'KERA CATERING',adresse:'Paris, France',paysOrigine:'France',
+  ingredients:[{ingredientId:13,qte:600},{ingredientId:9,qte:300},{ingredientId:4,qte:30},{ingredientId:19,qte:5},{ingredientId:20,qte:1}]
+}]);
+let ingredients = load('kera_ingredients', INGS_DEFAUT);
+let lots = load('kera_lots',[
+  {id:1,ingredientId:1,numLot:'LOT-2024-001',fournisseur:'Grands Moulins',dateReception:'2024-10-01',dlc:'2025-10-01',qteInitiale:25000,qteRestante:18500,prixAchat:0.9},
+  {id:2,ingredientId:6,numLot:'LOT-2024-002',fournisseur:'Poultry France',dateReception:'2024-11-15',dlc:'2024-12-01',qteInitiale:5000,qteRestante:2300,prixAchat:9.2},
+]);
+
+function persist(){
+  save('kera_recettes',recettes);
+  save('kera_ingredients',ingredients);
+  save('kera_lots',lots);
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function calcNutri(ings,poids){
+  let t={kcal:0,prot:0,gluc:0,lip:0,sel:0,suc:0,agSat:0},pt=0;
+  (ings||[]).forEach(i=>{
+    const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return;
+    pt+=i.qte;
+    t.kcal+=ing.kcal*i.qte;t.prot+=ing.proteines*i.qte;
+    t.gluc+=ing.glucides*i.qte;t.lip+=ing.lipides*i.qte;
+    t.sel+=ing.sel*i.qte;t.suc+=ing.sucres*i.qte;t.agSat+=ing.agSat*i.qte;
+  });
+  const r=pt>0?poids/pt:0;
+  return{kcal:Math.round(t.kcal*r),kj:Math.round(t.kcal*r*4.184),
+    prot:+(t.prot*r).toFixed(1),gluc:+(t.gluc*r).toFixed(1),
+    lip:+(t.lip*r).toFixed(1),sel:+(t.sel*r).toFixed(2),
+    suc:+(t.suc*r).toFixed(1),agSat:+(t.agSat*r).toFixed(1)};
+}
+function getAllerg(ings){
+  const s=new Set();
+  (ings||[]).forEach(i=>{const ing=ingredients.find(b=>b.id===i.ingredientId);if(ing)(ing.allergenes||[]).forEach(a=>s.add(a))});
+  return s;
+}
+function calcCout(ings){
+  return (ings||[]).reduce((a,i)=>{const ing=ingredients.find(b=>b.id===i.ingredientId);return a+(ing?(ing.prixKg||0)*i.qte/1000:0)},0);
+}
+function fmtDate(d){return new Date(d).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d}
+function isExp(dlc){return new Date(dlc)<new Date()}
+function isWarn(dlc){return new Date(dlc)<addDays(7)&&!isExp(dlc)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function genId(){return Date.now()+Math.floor(Math.random()*1000)}
+function badgeAl(al){return [...al].map(a=>`<span class="badge bg">${AL[a]}</span>`).join('')}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+let currentTab='dashboard';
+function goTab(tab){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');b.querySelector('.active-bar')?.remove()});
+  document.getElementById('page-'+tab).classList.add('active');
+  const nb=document.getElementById('nav-'+tab);
+  nb.classList.add('active');
+  if(!nb.querySelector('.active-bar')){const bar=document.createElement('div');bar.className='active-bar';nb.appendChild(bar);}
+  currentTab=tab;
+  renderTab(tab);
+  document.getElementById('content').scrollTo(0,0);
+}
+function renderTab(tab){
+  if(tab==='dashboard')renderDashboard();
+  else if(tab==='recettes'){showRecView('list');renderRecList();}
+  else if(tab==='etiquette')renderEtiqSel();
+  else if(tab==='ingredients'){showIngView('list');renderIngList();}
+  else if(tab==='tracabilite')renderLots();
+}
+
+// ═══════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════
+function renderDashboard(){
+  const lotsExp=lots.filter(l=>isExp(l.dlc));
+  const lotsWarn=lots.filter(l=>isWarn(l.dlc));
+  const coutMoy=recettes.length?recettes.reduce((a,r)=>a+calcCout(r.ingredients),0)/recettes.length:0;
+  const stats=[
+    {v:recettes.length,l:'Recettes',c:'var(--gold)'},
+    {v:ingredients.length,l:'Ingrédients',c:'var(--gold)'},
+    {v:lots.length,l:'Lots tracés',c:'var(--gold)'},
+    {v:lotsExp.length,l:'Lots expirés',c:'var(--red)'},
+    {v:lotsWarn.length,l:'À surveiller',c:'var(--orange)'},
+    {v:coutMoy.toFixed(2)+'€',l:'Coût moyen',c:'var(--green)'},
+  ];
+  document.getElementById('stats-grid').innerHTML=stats.map(s=>`
+    <div class="stat"><div class="stat-v" style="color:${s.c}">${s.v}</div><div class="stat-l">${s.l}</div></div>`).join('');
+
+  // Récap recettes
+  const dr=document.getElementById('dash-recettes');
+  dr.innerHTML=`<div class="ct">Allergènes par recette</div>`+
+    (recettes.length===0?'<div class="empty">Aucune recette</div>':
+    recettes.map(r=>{
+      const al=getAllerg(r.ingredients);
+      const c=calcCout(r.ingredients);
+      const n=calcNutri(r.ingredients,r.portionPoids);
+      return`<div style="padding:10px 0;border-bottom:1px solid var(--b1)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-weight:600">${esc(r.nom)}</div>
+          <button class="btn btn-out btn-xs" onclick="goToEtiq(${r.id})">Étiquette →</button>
+        </div>
+        <div style="font-size:10px;color:var(--mut);margin-bottom:5px">${n.kcal} kcal · ${c.toFixed(2)}€</div>
+        <div class="badges-row">${al.size===0?'<span style="font-size:9px;color:var(--dim)">Aucun allergène</span>':badgeAl(al)}</div>
+      </div>`;
+    }).join(''));
+
+  // Alertes
+  const da=document.getElementById('dash-alertes');
+  const alerts=[...lotsExp,...lotsWarn];
+  if(alerts.length>0){
+    da.style.display='block';
+    da.innerHTML=`<div class="ct">⚠️ Alertes traçabilité</div>`+
+      alerts.map(l=>{
+        const ing=ingredients.find(i=>i.id===l.ingredientId);
+        const exp=isExp(l.dlc);
+        return`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--b1)">
+          <span style="font-size:18px">${exp?'🔴':'🟡'}</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:12px">${esc(l.numLot)}</div>
+          <div style="font-size:10px;color:var(--mut)">${esc(ing?.nom||'?')} · DLC: ${fmtDate(l.dlc)}</div></div>
+          <span class="badge ${exp?'br':'bo'}">${exp?'Expiré':'Bientôt'}</span>
+        </div>`;
+      }).join('');
+  }else{da.style.display='none';}
+
+  // Alert badge nav
+  const tot=lotsExp.length+lotsWarn.length;
+  const nb=document.getElementById('nav-tracabilite');
+  let ex=nb.querySelector('.nav-alert');
+  if(tot>0){
+    if(!ex){ex=document.createElement('div');ex.className='nav-alert';nb.appendChild(ex);}
+    ex.textContent=tot;
+  }else if(ex){ex.remove();}
+}
+
+function goToEtiq(id){
+  goTab('etiquette');
+  setTimeout(()=>{document.getElementById('etiq-sel').value=id;renderEtiquette();},50);
+}
+
+// ═══════════════════════════════════════════════════
+// RECETTES
+// ═══════════════════════════════════════════════════
+function showRecView(v){
+  ['list','detail','form'].forEach(x=>document.getElementById('rec-'+x+'-view').style.display=x===v?'block':'none');
+}
+
+function renderRecList(){
+  const q=(document.getElementById('rec-search')?.value||'').toLowerCase();
+  const list=recettes.filter(r=>r.nom.toLowerCase().includes(q));
+  document.getElementById('rec-list').innerHTML=list.length===0?
+    '<div class="empty">Aucune recette</div>':
+    list.map(r=>{
+      const al=getAllerg(r.ingredients);
+      const c=calcCout(r.ingredients);
+      const n=calcNutri(r.ingredients,r.portionPoids);
+      return`<div class="list-item" onclick="showRecDetail(${r.id})">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+          <div class="li-name">${esc(r.nom)}</div>
+          <div style="color:var(--gold);font-size:11px;font-weight:600;flex-shrink:0;margin-left:8px">${c.toFixed(2)}€</div>
+        </div>
+        <div class="li-meta">${r.ingredients.length} ingr. · ${n.kcal} kcal · ${r.portionPoids}g/portion</div>
+        <div class="badges-row">${al.size===0?'<span style="font-size:9px;color:var(--dim)">Aucun allergène</span>':
+          [...al].slice(0,4).map(a=>`<span class="badge bg">${AL[a]}</span>`).join('')+
+          (al.size>4?`<span class="badge br">+${al.size-4}</span>`:'')}</div>
+      </div>`;
+    }).join('');
+}
+
+function showRecDetail(id){
+  const r=recettes.find(x=>x.id===id);if(!r)return;
+  showRecView('detail');
+  const n=calcNutri(r.ingredients,r.portionPoids);
+  const al=getAllerg(r.ingredients);
+  const cout=calcCout(r.ingredients);
+  const coutPort=cout/r.portions;
+
+  document.getElementById('rec-detail-view').innerHTML=`
+    <button class="back-btn" onclick="showRecView('list');renderRecList()">← Retour</button>
+    <div class="ph">
+      <div><div class="ph-t">${esc(r.nom)}</div><div class="ph-s">${esc(r.description)}</div></div>
+      <div class="ph-a">
+        <button class="btn btn-out btn-sm" onclick="showRecForm(${r.id})">✏</button>
+        <button class="btn btn-out btn-sm" onclick="goToEtiq(${r.id})">🏷</button>
+      </div>
+    </div>
+
+    <!-- Coûts -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+      <div class="card-s2" style="text-align:center">
+        <div style="color:var(--gold);font-size:18px;font-weight:700">${cout.toFixed(2)}€</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-top:3px">Coût total</div>
+      </div>
+      <div class="card-s2" style="text-align:center">
+        <div style="color:var(--gold);font-size:18px;font-weight:700">${coutPort.toFixed(2)}€</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-top:3px">/ portion</div>
+      </div>
+      <div class="card-s2" style="text-align:center">
+        <div style="color:var(--green);font-size:18px;font-weight:700">${(coutPort*3.5).toFixed(2)}€</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.06em;margin-top:3px">Prix vente ×3.5</div>
+      </div>
+    </div>
+
+    <!-- Ingrédients -->
+    <div class="card">
+      <div class="ct">Ingrédients</div>
+      ${(r.ingredients||[]).sort((a,b)=>b.qte-a.qte).map(i=>{
+        const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return'';
+        return`<div class="row-item">
+          <div class="ri-main">
+            <div class="ri-name">${esc(ing.nom)}</div>
+            <div class="ri-sub">${(ing.allergenes||[]).map(a=>AL[a]).join(', ')||'Sans allergène'}</div>
+          </div>
+          <div style="font-size:11px;color:var(--mut);margin-right:8px">${i.qte}${ing.unite}</div>
+          <div style="font-size:10px;color:var(--gold)">${((ing.prixKg||0)*i.qte/1000).toFixed(2)}€</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- Nutrition -->
+    <div class="card">
+      <div class="ct">Valeurs nutritionnelles</div>
+      <div class="nutri-big"><div class="nb-v">${n.kcal}</div><div class="nb-u">kcal / ${r.portionPoids}g</div></div>
+      <div class="nutri-row"><span>Énergie</span><span>${n.kj} kJ / ${n.kcal} kcal</span></div>
+      <div class="nutri-row"><span>Matières grasses</span><span>${n.lip} g</span></div>
+      <div class="nutri-row sub"><span>dont acides gras saturés</span><span>${n.agSat} g</span></div>
+      <div class="nutri-row"><span>Glucides</span><span>${n.gluc} g</span></div>
+      <div class="nutri-row sub"><span>dont sucres</span><span>${n.suc} g</span></div>
+      <div class="nutri-row"><span>Protéines</span><span>${n.prot} g</span></div>
+      <div class="nutri-row"><span>Sel</span><span>${n.sel} g</span></div>
+    </div>
+
+    <!-- Allergènes -->
+    <div class="card">
+      <div class="ct">Allergènes (UE 1169/2011)</div>
+      <div class="allerg-grid">
+        ${AL_KEYS.map(k=>`<div class="ac ${al.has(k)?'on':''}">${AL[k]}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Répartition coût -->
+    <div class="card">
+      <div class="ct">Répartition coût de revient</div>
+      ${(r.ingredients||[]).sort((a,b)=>b.qte-a.qte).map(i=>{
+        const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return'';
+        const c=(ing.prixKg||0)*i.qte/1000;
+        const pct=cout>0?c/cout*100:0;
+        return`<div class="cost-row">
+          <div style="display:flex;justify-content:space-between;font-size:11px">
+            <span>${esc(ing.nom)} (${i.qte}${ing.unite})</span>
+            <span style="color:var(--gold)">${c.toFixed(3)}€ (${pct.toFixed(0)}%)</span>
+          </div>
+          <div class="cost-bar-bg"><div class="cost-bar-f" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')}
+      <hr>
+      <div style="display:flex;justify-content:space-between;font-weight:700;font-size:13px">
+        <span>Total</span><span style="color:var(--gold)">${cout.toFixed(2)}€</span>
+      </div>
+    </div>
+
+    <button class="btn btn-red btn-full" onclick="delRec(${r.id})" style="margin-top:4px">🗑 Supprimer cette recette</button>
+  `;
+}
+
+let recFormId=null;
+let recFormIngs=[];
+let acTimeout=null;
+
+function showRecForm(id){
+  recFormId=id;
+  const r=id?recettes.find(x=>x.id===id):null;
+  recFormIngs=r?(r.ingredients||[]).map(i=>({...i})):[];
+  showRecView('form');
+  renderRecForm(r);
+}
+
+function renderRecForm(r){
+  document.getElementById('rec-form-view').innerHTML=`
+    <div class="ph">
+      <div class="ph-t">${r?'Modifier':'Nouvelle recette'}</div>
+      <div class="ph-a">
+        <button class="btn btn-gold btn-sm" onclick="saveRec()">Enregistrer</button>
+        <button class="btn btn-out btn-sm" onclick="${r?`showRecDetail(${r.id})`:'showRecView(\'list\');renderRecList()'}">Annuler</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Informations</div>
+      <div class="field"><label>Nom du produit *</label><input class="inp" id="rf-nom" value="${esc(r?.nom||'')}" placeholder="ex: Gratin Dauphinois"></div>
+      <div class="field"><label>Description</label><textarea class="ta inp" id="rf-desc" rows="2">${esc(r?.description||'')}</textarea></div>
+      <div class="field"><label>Catégorie</label>
+        <select class="sel" id="rf-cat">
+          ${['Plat chaud','Plat froid','Entrée','Dessert','Sauce','Autre'].map(c=>`<option ${r?.categorie===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Portions</label><input class="inp" id="rf-portions" type="number" value="${r?.portions||4}"></div>
+        <div class="field"><label>Poids/portion (g)</label><input class="inp" id="rf-poids" type="number" value="${r?.portionPoids||200}"></div>
+        <div class="field"><label>DLC (jours)</label><input class="inp" id="rf-dlc" type="number" value="${r?.dlc||3}"></div>
+      </div>
+      <div class="field"><label>Conditions de conservation</label><input class="inp" id="rf-cons" value="${esc(r?.conditionStockage||'Conserver entre 0°C et 4°C')}"></div>
+      <div class="row2">
+        <div class="field"><label>Fabricant</label><input class="inp" id="rf-fab" value="${esc(r?.fabricant||'KERA CATERING')}"></div>
+        <div class="field"><label>Adresse</label><input class="inp" id="rf-addr" value="${esc(r?.adresse||'Paris, France')}"></div>
+      </div>
+      <div class="field"><label>Pays d'origine</label><input class="inp" id="rf-pays" value="${esc(r?.paysOrigine||'France')}"></div>
+    </div>
+    <div class="card">
+      <div class="ct">Ingrédients <span class="badge bg" id="ing-count-badge">${recFormIngs.length}</span></div>
+      <div id="form-ings-list"></div>
+      <hr>
+      <div class="field"><label>Ajouter un ingrédient</label>
+        <div class="ac-wrap">
+          <input class="inp" id="ing-search-form" placeholder="Rechercher…" oninput="acSearch()" autocomplete="off">
+          <div class="ac-list" id="ac-list" style="display:none"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="inp" id="ing-qte" type="number" placeholder="Quantité" style="flex:1">
+        <button class="btn btn-gold btn-sm" onclick="addIngToForm()">+ Ajouter</button>
+      </div>
+    </div>
+  `;
+  renderFormIngsList();
+}
+
+let acSelId=null;
+function acSearch(){
+  const q=document.getElementById('ing-search-form').value.toLowerCase();
+  acSelId=null;
+  if(q.length<2){document.getElementById('ac-list').style.display='none';return;}
+  const res=ingredients.filter(i=>i.nom.toLowerCase().includes(q)).slice(0,6);
+  if(res.length===0){document.getElementById('ac-list').style.display='none';return;}
+  document.getElementById('ac-list').innerHTML=res.map(i=>`
+    <div class="ac-item" onclick="acSelect(${i.id},'${esc(i.nom)}')">
+      <div>${esc(i.nom)}</div>
+      ${i.allergenes.length?`<div class="ac-al">${i.allergenes.map(a=>AL[a]).join(', ')}</div>`:''}
+    </div>`).join('');
+  document.getElementById('ac-list').style.display='block';
+}
+function acSelect(id,nom){
+  acSelId=id;
+  document.getElementById('ing-search-form').value=nom;
+  document.getElementById('ac-list').style.display='none';
+}
+function addIngToForm(){
+  const qte=parseFloat(document.getElementById('ing-qte').value);
+  if(!acSelId||!qte){alert('Sélectionne un ingrédient et une quantité.');return;}
+  recFormIngs.push({ingredientId:acSelId,qte});
+  acSelId=null;
+  document.getElementById('ing-search-form').value='';
+  document.getElementById('ing-qte').value='';
+  document.getElementById('ac-list').style.display='none';
+  renderFormIngsList();
+}
+function removeFormIng(idx){recFormIngs.splice(idx,1);renderFormIngsList();}
+function renderFormIngsList(){
+  const el=document.getElementById('form-ings-list');if(!el)return;
+  document.getElementById('ing-count-badge').textContent=recFormIngs.length;
+  el.innerHTML=[...recFormIngs].sort((a,b)=>b.qte-a.qte).map((i,idx)=>{
+    const ing=ingredients.find(b=>b.id===i.ingredientId);
+    return`<div class="row-item">
+      <div class="ri-main"><div class="ri-name">${esc(ing?.nom||'?')}</div>
+        <div class="ri-sub">${(ing?.allergenes||[]).map(a=>AL[a]).join(', ')||'—'}</div></div>
+      <div style="font-size:11px;color:var(--mut);margin-right:6px">${i.qte}${ing?.unite||''}</div>
+      <button class="btn-ghost" onclick="removeFormIng(${idx})" style="color:var(--red)">✕</button>
+    </div>`;
+  }).join('')||'<div style="color:var(--mut);font-size:12px;padding:8px 0">Aucun ingrédient ajouté</div>';
+}
+
+function saveRec(){
+  const nom=document.getElementById('rf-nom').value.trim();
+  if(!nom){alert('Le nom est obligatoire.');return;}
+  const form={
+    id:recFormId||genId(),nom,
+    description:document.getElementById('rf-desc').value,
+    categorie:document.getElementById('rf-cat').value,
+    portions:parseInt(document.getElementById('rf-portions').value)||1,
+    portionPoids:parseInt(document.getElementById('rf-poids').value)||100,
+    dlc:parseInt(document.getElementById('rf-dlc').value)||1,
+    conditionStockage:document.getElementById('rf-cons').value,
+    fabricant:document.getElementById('rf-fab').value,
+    adresse:document.getElementById('rf-addr').value,
+    paysOrigine:document.getElementById('rf-pays').value,
+    ingredients:recFormIngs,
+  };
+  if(recFormId){recettes=recettes.map(r=>r.id===recFormId?form:r);}
+  else{recettes=[...recettes,form];}
+  persist();
+  showRecDetail(form.id);
+}
+function delRec(id){
+  if(!confirm('Supprimer cette recette ?'))return;
+  recettes=recettes.filter(r=>r.id!==id);persist();
+  showRecView('list');renderRecList();
+}
+
+// ═══════════════════════════════════════════════════
+// ÉTIQUETTE
+// ═══════════════════════════════════════════════════
+function renderEtiqSel(){
+  const sel=document.getElementById('etiq-sel');
+  sel.innerHTML='<option value="">-- Sélectionner une recette --</option>'+
+    recettes.map(r=>`<option value="${r.id}">${esc(r.nom)}</option>`).join('');
+  renderEtiquette();
+}
+function renderEtiquette(){
+  const id=parseInt(document.getElementById('etiq-sel').value);
+  const r=recettes.find(x=>x.id===id);
+  const el=document.getElementById('etiq-content');
+  if(!r){el.innerHTML='<div class="empty">Sélectionne une recette</div>';return;}
+  const n=calcNutri(r.ingredients,r.portionPoids);
+  const al=getAllerg(r.ingredients);
+  const dlcDate=addDays(r.dlc);
+  const ingsOrd=(r.ingredients||[]).sort((a,b)=>b.qte-a.qte);
+
+  el.innerHTML=`
+    <!-- ÉTIQUETTE BLANCHE -->
+    <div class="etiq">
+      <div class="etiq-nom">${esc(r.nom)}</div>
+      <div class="etiq-sec">
+        <div class="etiq-lbl">Ingrédients</div>
+        <div style="font-size:8px;line-height:1.5">
+          ${ingsOrd.map((i,idx)=>{
+            const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return'';
+            return(idx?', ':'')+(ing.allergenes.length?`<strong>${esc(ing.nom)}</strong>`:esc(ing.nom));
+          }).join('')}
+        </div>
+      </div>
+      ${al.size>0?`<div class="etiq-sec">
+        <div class="etiq-allerg"><strong>Contient :</strong> ${[...al].map(a=>AL[a]).join(', ')}</div>
+      </div>`:''}
+      <div class="etiq-sec">
+        <div class="etiq-nutri">
+          <div class="etiq-nutri-h">Valeurs nutritionnelles moyennes pour ${r.portionPoids}g</div>
+          <div class="etiq-nutri-r"><span>Énergie</span><span>${n.kj} kJ / ${n.kcal} kcal</span></div>
+          <div class="etiq-nutri-r"><span>Matières grasses</span><span>${n.lip} g</span></div>
+          <div class="etiq-nutri-r sub"><span>dont acides gras saturés</span><span>${n.agSat} g</span></div>
+          <div class="etiq-nutri-r"><span>Glucides</span><span>${n.gluc} g</span></div>
+          <div class="etiq-nutri-r sub"><span>dont sucres</span><span>${n.suc} g</span></div>
+          <div class="etiq-nutri-r"><span>Protéines</span><span>${n.prot} g</span></div>
+          <div class="etiq-nutri-r"><span>Sel</span><span>${n.sel} g</span></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:5px">
+        <span><strong>Poids net :</strong> ${r.portionPoids*r.portions}g (${r.portions} portions)</span>
+        <span><strong>Origine :</strong> ${esc(r.paysOrigine)}</span>
+      </div>
+      <div style="font-size:8px;margin-bottom:4px"><strong>À consommer jusqu'au :</strong> ${fmtDate(dlcDate)}</div>
+      <div style="font-size:8px;margin-bottom:4px"><strong>Conservation :</strong> ${esc(r.conditionStockage)}</div>
+      <div class="etiq-footer">Fabriqué par : ${esc(r.fabricant)} — ${esc(r.adresse)}<br>
+        Allergènes en <strong>GRAS</strong> dans la liste des ingrédients · Règlement (UE) n° 1169/2011</div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="card">
+      <div class="ct">✅ Checklist conformité INCO</div>
+      ${[
+        [!!r.nom,'Dénomination de vente'],
+        [(r.ingredients||[]).length>0,'Liste des ingrédients (ordre décroissant)'],
+        [true,'Allergènes en gras dans la liste'],
+        [true,'Encadré 14 allergènes majeurs UE'],
+        [r.portionPoids>0,'Déclaration nutritionnelle par portion'],
+        [r.dlc>0,'Date limite de consommation (DLC)'],
+        [!!r.conditionStockage,'Conditions de conservation'],
+        [!!r.fabricant&&!!r.adresse,'Coordonnées du fabricant'],
+        [!!r.paysOrigine,'Pays d\'origine'],
+      ].map(([ok,lbl])=>`<div class="chk-item">
+        <span class="${ok?'chk-ok':'chk-no'}">${ok?'✓':'✗'}</span>
+        <span style="font-size:12px;color:${ok?'var(--text)':'var(--red)'}">${lbl}</span>
+      </div>`).join('')}
+      <div style="background:rgba(82,183,136,.08);border-radius:6px;padding:10px;margin-top:10px;font-size:11px;color:var(--green)">
+        ✓ Étiquette conforme au Règlement UE n° 1169/2011
+      </div>
+    </div>
+
+    <!-- ALLERGÈNES GRILLE -->
+    <div class="card">
+      <div class="ct">Allergènes détectés</div>
+      <div class="allerg-grid">
+        ${AL_KEYS.map(k=>`<div class="ac ${al.has(k)?'on':''}">${AL[k]}</div>`).join('')}
+      </div>
+    </div>
+
+    <!-- COÛT -->
+    <div class="card">
+      <div class="ct">Coût de revient</div>
+      ${(r.ingredients||[]).sort((a,b)=>b.qte-a.qte).map(i=>{
+        const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return'';
+        const c=(ing.prixKg||0)*i.qte/1000;
+        const tot=calcCout(r.ingredients);
+        const pct=tot>0?c/tot*100:0;
+        return`<div class="cost-row">
+          <div style="display:flex;justify-content:space-between;font-size:11px">
+            <span>${esc(ing.nom)}</span><span style="color:var(--gold)">${c.toFixed(3)}€ (${pct.toFixed(0)}%)</span>
+          </div>
+          <div class="cost-bar-bg"><div class="cost-bar-f" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')}
+      <hr>
+      <div class="cout-row"><span>Total recette</span><span>${calcCout(r.ingredients).toFixed(2)}€</span></div>
+      <div class="cout-row"><span>Par portion</span><span>${(calcCout(r.ingredients)/r.portions).toFixed(2)}€</span></div>
+      <div class="cout-row"><span style="color:var(--green)">Prix vente conseillé (×3.5)</span><span style="color:var(--green)">${(calcCout(r.ingredients)/r.portions*3.5).toFixed(2)}€</span></div>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// INGRÉDIENTS
+// ═══════════════════════════════════════════════════
+function showIngView(v){
+  document.getElementById('ing-list-view').style.display=v==='list'?'block':'none';
+  document.getElementById('ing-form-view').style.display=v==='form'?'block':'none';
+}
+function renderIngList(){
+  const q=(document.getElementById('ing-search')?.value||'').toLowerCase();
+  const cat=document.getElementById('ing-cat-filter')?.value||'';
+  const cats=[...new Set(ingredients.map(i=>i.categorie))];
+  const catSel=document.getElementById('ing-cat-filter');
+  if(catSel&&catSel.options.length<=1){
+    cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;catSel.appendChild(o);});
+  }
+  document.getElementById('ing-count').textContent=`${ingredients.length} ingrédients enregistrés`;
+  const list=ingredients.filter(i=>
+    i.nom.toLowerCase().includes(q)&&(!cat||i.categorie===cat));
+  document.getElementById('ing-grid-container').innerHTML=
+    list.length===0?'<div class="empty">Aucun ingrédient</div>':
+    `<div class="ing-grid">${list.map(i=>`
+      <div class="ing-card" onclick="showIngForm(${i.id})">
+        <div style="font-weight:600;font-size:12px;margin-bottom:3px">${esc(i.nom)}</div>
+        <div style="font-size:9px;color:var(--mut);margin-bottom:5px">${esc(i.categorie)} · ${i.prixKg}€/kg</div>
+        <div style="font-size:9px;color:var(--mut);margin-bottom:5px">${i.kcal}kcal · P:${i.proteines}g · L:${i.lipides}g</div>
+        <div class="badges-row">${(i.allergenes||[]).length===0?'<span style="font-size:8px;color:var(--dim)">Sans allergène</span>':
+          (i.allergenes||[]).map(a=>`<span class="badge bg">${AL[a]}</span>`).join('')}</div>
+      </div>`).join('')}</div>`;
+}
+
+let ingFormId=null;
+let ingFormAl=[];
+function showIngForm(id){
+  ingFormId=id;
+  const ing=id?ingredients.find(x=>x.id===id):null;
+  ingFormAl=ing?[...(ing.allergenes||[])]:[];
+  showIngView('form');
+  document.getElementById('ing-form-view').innerHTML=`
+    <div class="ph">
+      <div class="ph-t">${ing?'Modifier':'Nouvel ingrédient'}</div>
+      <div class="ph-a">
+        <button class="btn btn-gold btn-sm" onclick="saveIng()">Enregistrer</button>
+        <button class="btn btn-out btn-sm" onclick="showIngView('list');renderIngList()">Annuler</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="field"><label>Nom *</label><input class="inp" id="if-nom" value="${esc(ing?.nom||'')}"></div>
+      <div class="row2">
+        <div class="field"><label>Unité</label><select class="sel" id="if-unite">
+          ${['g','ml','kg','L'].map(u=>`<option ${ing?.unite===u?'selected':''}>${u}</option>`).join('')}
+        </select></div>
+        <div class="field"><label>Catégorie</label><select class="sel" id="if-cat">
+          ${['Céréales','Légumes','Viandes','Poissons','Laitier','Œufs','Graisses','Sucres','Condiments','Fruits secs','Divers']
+            .map(c=>`<option ${ing?.categorie===c?'selected':''}>${c}</option>`).join('')}
+        </select></div>
+      </div>
+      <div class="field"><label>Prix au kg (€)</label><input class="inp" id="if-prix" type="number" step="0.01" value="${ing?.prixKg||0}"></div>
+      <div class="row2">
+        <div class="field"><label>Kcal/100g</label><input class="inp" id="if-kcal" type="number" step="0.01" value="${ing?.kcal||0}"></div>
+        <div class="field"><label>Protéines/100g</label><input class="inp" id="if-prot" type="number" step="0.01" value="${ing?.proteines||0}"></div>
+        <div class="field"><label>Glucides/100g</label><input class="inp" id="if-gluc" type="number" step="0.01" value="${ing?.glucides||0}"></div>
+        <div class="field"><label>Lipides/100g</label><input class="inp" id="if-lip" type="number" step="0.01" value="${ing?.lipides||0}"></div>
+        <div class="field"><label>Sel/100g</label><input class="inp" id="if-sel" type="number" step="0.001" value="${ing?.sel||0}"></div>
+        <div class="field"><label>Sucres/100g</label><input class="inp" id="if-suc" type="number" step="0.01" value="${ing?.sucres||0}"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct">Allergènes présents</div>
+      <div id="al-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        ${AL_KEYS.map(k=>`
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;padding:5px;background:var(--s2);border-radius:5px;border:1px solid var(--b1)">
+            <input type="checkbox" id="al-${k}" ${ingFormAl.includes(k)?'checked':''} onchange="toggleIngAl('${k}')" style="accent-color:var(--gold);width:14px;height:14px">
+            ${AL[k]}
+          </label>`).join('')}
+      </div>
+    </div>
+    ${ing?`<button class="btn btn-red btn-full" onclick="delIng(${ing.id})" style="margin-top:4px">🗑 Supprimer cet ingrédient</button>`:''}
+  `;
+}
+function toggleIngAl(k){
+  if(ingFormAl.includes(k))ingFormAl=ingFormAl.filter(a=>a!==k);
+  else ingFormAl.push(k);
+}
+function saveIng(){
+  const nom=document.getElementById('if-nom').value.trim();
+  if(!nom){alert('Le nom est obligatoire.');return;}
+  const form={
+    id:ingFormId||genId(),nom,
+    unite:document.getElementById('if-unite').value,
+    categorie:document.getElementById('if-cat').value,
+    prixKg:parseFloat(document.getElementById('if-prix').value)||0,
+    kcal:parseFloat(document.getElementById('if-kcal').value)||0,
+    proteines:parseFloat(document.getElementById('if-prot').value)||0,
+    glucides:parseFloat(document.getElementById('if-gluc').value)||0,
+    lipides:parseFloat(document.getElementById('if-lip').value)||0,
+    sel:parseFloat(document.getElementById('if-sel').value)||0,
+    sucres:parseFloat(document.getElementById('if-suc').value)||0,
+    agSat:0,
+    allergenes:ingFormAl,
+  };
+  if(ingFormId){ingredients=ingredients.map(i=>i.id===ingFormId?form:i);}
+  else{ingredients=[...ingredients,form];}
+  persist();showIngView('list');renderIngList();
+}
+function delIng(id){
+  if(!confirm('Supprimer cet ingrédient ?'))return;
+  ingredients=ingredients.filter(i=>i.id!==id);persist();showIngView('list');renderIngList();
+}
+
+// ═══════════════════════════════════════════════════
+// TRAÇABILITÉ LOTS
+// ═══════════════════════════════════════════════════
+function renderLots(){
+  const lotsExp=lots.filter(l=>isExp(l.dlc));
+  const lotsWarn=lots.filter(l=>isWarn(l.dlc));
+  document.getElementById('lot-sub').textContent=`${lots.length} lots · ${lotsExp.length} expirés · ${lotsWarn.length} à surveiller`;
+  document.getElementById('lot-list').innerHTML=lots.length===0?
+    '<div class="empty">Aucun lot enregistré</div>':
+    lots.map(l=>{
+      const ing=ingredients.find(i=>i.id===l.ingredientId);
+      const exp=isExp(l.dlc);const warn=isWarn(l.dlc);
+      const pct=l.qteInitiale>0?l.qteRestante/l.qteInitiale*100:0;
+      const bc=exp?'var(--red)':warn?'var(--orange)':'var(--green)';
+      return`<div class="lot-card ${exp?'lot-exp':warn?'lot-warn':''}">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-weight:600;font-size:13px">${esc(l.numLot)}</div>
+            <div style="font-size:11px;color:var(--mut)">${esc(ing?.nom||'Ingrédient inconnu')}</div>
+          </div>
+          <span class="badge ${exp?'br':warn?'bo':'bv'}">${exp?'Expiré':warn?'Bientôt':'OK'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:10px;color:var(--mut);margin-bottom:10px">
+          <span>📦 ${esc(l.fournisseur)}</span>
+          <span>📅 Réception: ${fmtDate(l.dateReception)}</span>
+          <span>⏰ DLC: ${fmtDate(l.dlc)}</span>
+          <span>💶 ${l.prixAchat}€/kg</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px">
+          <span>Stock restant</span>
+          <span style="color:var(--gold)">${l.qteRestante}g / ${l.qteInitiale}g (${pct.toFixed(0)}%)</span>
+        </div>
+        <div class="prog"><div class="prog-f" style="width:${pct}%;background:${bc}"></div></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-out btn-xs" onclick="showLotModal(${l.id})">Modifier</button>
+          <button class="btn btn-red btn-xs" onclick="delLot(${l.id})">Supprimer</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+let lotFormId=null;
+function showLotModal(id){
+  lotFormId=id;
+  const l=id?lots.find(x=>x.id===id):null;
+  document.getElementById('lot-modal-title').textContent=l?'Modifier lot':'Nouveau lot';
+  document.getElementById('lot-form').innerHTML=`
+    <div class="field"><label>N° de lot *</label><input class="inp" id="lf-num" value="${esc(l?.numLot||'')}" placeholder="LOT-2024-XXX"></div>
+    <div class="field"><label>Ingrédient</label>
+      <select class="sel" id="lf-ing">
+        <option value="">-- Sélectionner --</option>
+        ${ingredients.map(i=>`<option value="${i.id}" ${l?.ingredientId===i.id?'selected':''}>${esc(i.nom)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field"><label>Fournisseur</label><input class="inp" id="lf-four" value="${esc(l?.fournisseur||'')}"></div>
+    <div class="row2">
+      <div class="field"><label>Date de réception</label><input class="inp" id="lf-recep" type="date" value="${l?.dateReception||new Date().toISOString().slice(0,10)}"></div>
+      <div class="field"><label>DLC du lot</label><input class="inp" id="lf-dlc" type="date" value="${l?.dlc||''}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Qté initiale (g)</label><input class="inp" id="lf-qtei" type="number" value="${l?.qteInitiale||0}"></div>
+      <div class="field"><label>Qté restante (g)</label><input class="inp" id="lf-qter" type="number" value="${l?.qteRestante||0}"></div>
+    </div>
+    <div class="field"><label>Prix achat (€/kg)</label><input class="inp" id="lf-prix" type="number" step="0.01" value="${l?.prixAchat||0}"></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-gold btn-full" onclick="saveLot()">Enregistrer</button>
+      <button class="btn btn-out" onclick="closeLotModal()">Annuler</button>
+    </div>
+  `;
+  document.getElementById('lot-modal').classList.add('open');
+}
+function closeLotModal(){document.getElementById('lot-modal').classList.remove('open');}
+function saveLot(){
+  const num=document.getElementById('lf-num').value.trim();
+  if(!num){alert('Le numéro de lot est obligatoire.');return;}
+  const form={
+    id:lotFormId||genId(),
+    numLot:num,
+    ingredientId:parseInt(document.getElementById('lf-ing').value)||null,
+    fournisseur:document.getElementById('lf-four').value,
+    dateReception:document.getElementById('lf-recep').value,
+    dlc:document.getElementById('lf-dlc').value,
+    qteInitiale:parseInt(document.getElementById('lf-qtei').value)||0,
+    qteRestante:parseInt(document.getElementById('lf-qter').value)||0,
+    prixAchat:parseFloat(document.getElementById('lf-prix').value)||0,
+  };
+  if(lotFormId){lots=lots.map(l=>l.id===lotFormId?form:l);}
+  else{lots=[...lots,form];}
+  persist();closeLotModal();renderLots();
+}
+function delLot(id){
+  if(!confirm('Supprimer ce lot ?'))return;
+  lots=lots.filter(l=>l.id!==id);persist();renderLots();
+}
+
+// ═══════════════════════════════════════════════════
+// PWA INSTALL
+// ═══════════════════════════════════════════════════
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredPrompt=e;
+  document.getElementById('install-banner').classList.add('show');
+});
+document.getElementById('install-btn').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  const {outcome}=await deferredPrompt.userChoice;
+  if(outcome==='accepted')document.getElementById('install-banner').classList.remove('show');
+  deferredPrompt=null;
+});
+window.addEventListener('appinstalled',()=>{
+  document.getElementById('install-banner').classList.remove('show');
+  document.getElementById('sync-badge').textContent='✅ Installée';
+});
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+renderDashboard();
+</script>
+
+<!-- SERVICE WORKER pour offline -->
+<script>
+if('serviceWorker' in navigator){
+  const sw=`
+    const CACHE='kera-v1';
+    const ASSETS=['/'];
+    self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
+    self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match('/')))));
+  `;
+  const blob=new Blob([sw],{type:'application/javascript'});
+  navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(()=>{});
+}
+</script>
+</body>
+</html>
