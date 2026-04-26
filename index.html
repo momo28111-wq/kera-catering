@@ -199,6 +199,27 @@ hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
 
 /* scroll hint fade */
 #content::after{content:'';position:fixed;bottom:64px;left:0;right:0;height:20px;background:linear-gradient(transparent,var(--bg));pointer-events:none}
+
+/* ── IMPORT CSV ── */
+.drop-zone{border:2px dashed var(--b2);border-radius:var(--r);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;color:var(--mut);margin-bottom:12px}
+.drop-zone.drag{border-color:var(--gold3);background:var(--goldA);color:var(--text)}
+.drop-icon{font-size:36px;margin-bottom:10px}
+.csv-preview{max-height:240px;overflow-y:auto;margin-bottom:12px}
+.csv-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b1);font-size:11px}
+.csv-row-name{flex:1;font-weight:500}
+.code-block{background:var(--bg);border:1px solid var(--b1);border-radius:6px;padding:10px;font-family:monospace;font-size:10px;color:var(--gold2);overflow-x:auto;margin-bottom:10px;line-height:1.6}
+
+/* ── IMPRESSION ── */
+@media print{
+  body{background:#fff!important;color:#000!important;overflow:visible!important}
+  #header,#nav,#install-banner,.no-print,button{display:none!important}
+  #content{overflow:visible!important;padding:0!important}
+  .page{display:none!important}
+  #print-area{display:block!important}
+  .etiq{max-width:100%;box-shadow:none;border:1px solid #ccc}
+  @page{margin:10mm;size:A4}
+}
+#print-area{display:none}
 </style>
 </head>
 <body>
@@ -257,6 +278,7 @@ hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
   <div class="page" id="page-etiquette">
     <div class="ph" style="padding-top:4px">
       <div><div class="ph-t">Étiquette INCO</div><div class="ph-s">Règlement UE 1169/2011</div></div>
+      <button class="btn btn-gold btn-sm no-print" onclick="imprimerEtiquette()">🖨 Imprimer</button>
     </div>
     <div class="field">
       <label>Sélectionner une recette</label>
@@ -292,7 +314,49 @@ hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
     <div id="lot-list"></div>
   </div>
 
+  <!-- ══ IMPORT CSV ══ -->
+  <div class="page" id="page-import">
+    <div class="ph" style="padding-top:4px">
+      <div><div class="ph-t">Import CSV</div><div class="ph-s">Importer recettes ou ingrédients</div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="btn btn-gold btn-sm" id="csv-type-ing" onclick="setCsvType('ingredients')">🌿 Ingrédients</button>
+      <button class="btn btn-out btn-sm" id="csv-type-rec" onclick="setCsvType('recettes')">🍽 Recettes</button>
+    </div>
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-file').click()"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="handleDrop(event)">
+      <div class="drop-icon">📂</div>
+      <div style="font-weight:600;margin-bottom:6px">Glisse ton fichier CSV ici</div>
+      <div style="font-size:11px">ou appuie pour parcourir</div>
+      <input type="file" id="csv-file" accept=".csv,.txt" style="display:none" onchange="handleFile(this.files[0])">
+    </div>
+    <div id="csv-result" style="display:none">
+      <div class="card" style="margin-bottom:12px">
+        <div class="ct" id="csv-result-title"></div>
+        <div class="csv-preview" id="csv-preview"></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-gold btn-full" onclick="confirmImport()">✅ Importer</button>
+          <button class="btn btn-out" onclick="cancelImport()">Annuler</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" id="csv-format-card">
+      <div class="ct" id="csv-format-title">Format CSV — Ingrédients</div>
+      <p style="font-size:11px;color:var(--mut);margin-bottom:10px">Colonnes attendues :</p>
+      <div class="code-block" id="csv-format-code">nom,unite,categorie,allergenes,kcal,proteines,glucides,lipides,sel,sucres,prix_kg
+"Farine de blé",g,Céréales,gluten,364,10,76,1,0.1,0.3,0.90
+"Lait entier",ml,Laitier,lait,63,3.2,4.8,3.6,0.1,4.8,0.85</div>
+      <p style="font-size:10px;color:var(--mut);margin-top:8px;margin-bottom:8px">⚠️ Plusieurs allergènes : sépare par <strong>;</strong> ex: <code>gluten;lait</code></p>
+      <button class="btn btn-out btn-sm btn-full" onclick="downloadCsvModel()" id="csv-dl-btn">⬇ Télécharger le modèle CSV</button>
+    </div>
+  </div>
+
 </div>
+
+<!-- ZONE IMPRESSION -->
+<div id="print-area"></div>
 
 <!-- BOTTOM NAV -->
 <div id="nav">
@@ -311,6 +375,9 @@ hr{border:none;border-top:1px solid var(--b1);margin:12px 0}
   </button>
   <button class="nav-btn" onclick="goTab('tracabilite')" id="nav-tracabilite">
     <div class="ni">📦</div><div class="nl">Lots</div>
+  </button>
+  <button class="nav-btn" onclick="goTab('import')" id="nav-import">
+    <div class="ni">📥</div><div class="nl">Import</div>
   </button>
 </div>
 
@@ -445,6 +512,7 @@ function renderTab(tab){
   else if(tab==='etiquette')renderEtiqSel();
   else if(tab==='ingredients'){showIngView('list');renderIngList();}
   else if(tab==='tracabilite')renderLots();
+  else if(tab==='import'){setCsvType('ingredients');}
 }
 
 // ═══════════════════════════════════════════════════
@@ -1085,6 +1153,235 @@ function saveLot(){
 function delLot(id){
   if(!confirm('Supprimer ce lot ?'))return;
   lots=lots.filter(l=>l.id!==id);persist();renderLots();
+}
+
+// ═══════════════════════════════════════════════════
+// IMPORT CSV
+// ═══════════════════════════════════════════════════
+let csvType='ingredients';
+let csvParsed=[];
+
+function setCsvType(type){
+  csvType=type;
+  cancelImport();
+  const btnIng=document.getElementById('csv-type-ing');
+  const btnRec=document.getElementById('csv-type-rec');
+  if(btnIng&&btnRec){
+    btnIng.className=type==='ingredients'?'btn btn-gold btn-sm':'btn btn-out btn-sm';
+    btnRec.className=type==='recettes'?'btn btn-gold btn-sm':'btn btn-out btn-sm';
+  }
+  const titleEl=document.getElementById('csv-format-title');
+  const codeEl=document.getElementById('csv-format-code');
+  const dlBtn=document.getElementById('csv-dl-btn');
+  if(type==='ingredients'){
+    if(titleEl)titleEl.textContent='Format CSV — Ingrédients';
+    if(codeEl)codeEl.textContent='nom,unite,categorie,allergenes,kcal,proteines,glucides,lipides,sel,sucres,prix_kg
+"Farine de blé",g,Céréales,gluten,364,10,76,1,0.1,0.3,0.90
+"Lait entier",ml,Laitier,lait,63,3.2,4.8,3.6,0.1,4.8,0.85
+"Amandes",g,Fruits secs,fruits_a_coque,576,21,22,49,0.1,4.4,14.00';
+    if(dlBtn)dlBtn.onclick=()=>downloadCsvModel();
+  } else {
+    if(titleEl)titleEl.textContent='Format CSV — Recettes';
+    if(codeEl)codeEl.textContent='nom,description,categorie,portions,portionPoids,dlc,conditionStockage,fabricant,adresse,paysOrigine
+"Gratin Dauphinois","Gratin à la crème","Plat chaud",4,200,3,"Conserver 0-4°C","KERA CATERING","Paris","France"
+"Poulet rôti","Poulet entier rôti","Plat chaud",4,250,2,"Conserver 0-4°C","KERA CATERING","Paris","France"';
+    if(dlBtn)dlBtn.onclick=()=>downloadCsvModelRecettes();
+  }
+}
+
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('drag');
+  const file=e.dataTransfer.files[0];
+  if(file)handleFile(file);
+}
+
+function handleFile(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result;
+    if(csvType==='ingredients') parseIngredientsCSV(text);
+    else parseRecettesCSV(text);
+  };
+  reader.readAsText(file,'UTF-8');
+}
+
+function parseIngredientsCSV(text){
+  const lines=text.split(/?
+/).filter(l=>l.trim());
+  if(lines.length<2){alert('Fichier vide ou invalide.');return;}
+  const headers=parseCsvLine(lines[0]).map(h=>h.toLowerCase().trim());
+  csvParsed=[];
+  for(let i=1;i<lines.length;i++){
+    const vals=parseCsvLine(lines[i]);
+    const row={};
+    headers.forEach((h,j)=>row[h]=vals[j]||'');
+    if(!row['nom'])continue;
+    csvParsed.push({
+      id:genId()+i,
+      nom:row['nom'],
+      unite:row['unite']||'g',
+      categorie:row['categorie']||'Divers',
+      allergenes:(row['allergenes']||'').split(';').map(a=>a.trim()).filter(Boolean),
+      kcal:parseFloat(row['kcal'])||0,
+      proteines:parseFloat(row['proteines'])||0,
+      glucides:parseFloat(row['glucides'])||0,
+      lipides:parseFloat(row['lipides'])||0,
+      sel:parseFloat(row['sel'])||0,
+      sucres:parseFloat(row['sucres'])||0,
+      agSat:parseFloat(row['ag_satures']||row['ag_sat'])||0,
+      prixKg:parseFloat(row['prix_kg']||row['prixkg'])||0,
+    });
+  }
+  showCsvPreview();
+}
+
+function parseRecettesCSV(text){
+  const lines=text.split(/?
+/).filter(l=>l.trim());
+  if(lines.length<2){alert('Fichier vide ou invalide.');return;}
+  const headers=parseCsvLine(lines[0]).map(h=>h.toLowerCase().trim());
+  csvParsed=[];
+  for(let i=1;i<lines.length;i++){
+    const vals=parseCsvLine(lines[i]);
+    const row={};
+    headers.forEach((h,j)=>row[h]=vals[j]||'');
+    if(!row['nom'])continue;
+    csvParsed.push({
+      id:genId()+i,
+      nom:row['nom'],
+      description:row['description']||'',
+      categorie:row['categorie']||'Plat chaud',
+      portions:parseInt(row['portions'])||4,
+      portionPoids:parseInt(row['portionpoids']||row['portion_poids'])||200,
+      dlc:parseInt(row['dlc'])||3,
+      conditionStockage:row['conditionstockage']||row['condition_stockage']||'Conserver entre 0°C et 4°C',
+      fabricant:row['fabricant']||'KERA CATERING',
+      adresse:row['adresse']||'',
+      paysOrigine:row['paysorigine']||row['pays_origine']||'France',
+      ingredients:[],
+    });
+  }
+  showCsvPreview();
+}
+
+function parseCsvLine(line){
+  const result=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur.trim());cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function showCsvPreview(){
+  if(csvParsed.length===0){alert('Aucune ligne valide trouvée.');return;}
+  const titleEl=document.getElementById('csv-result-title');
+  const previewEl=document.getElementById('csv-preview');
+  if(titleEl)titleEl.textContent=`${csvParsed.length} ${csvType==='ingredients'?'ingrédients':'recettes'} détectés`;
+  if(previewEl)previewEl.innerHTML=csvParsed.map(item=>`
+    <div class="csv-row">
+      <div class="csv-row-name">${esc(item.nom)}</div>
+      ${csvType==='ingredients'?
+        `<span style="font-size:9px;color:var(--mut)">${item.kcal}kcal · ${item.prixKg}€/kg</span>
+         ${(item.allergenes||[]).map(a=>`<span class="badge bg">${AL[a]||a}</span>`).join('')}`
+        :`<span style="font-size:9px;color:var(--mut)">${item.categorie} · ${item.portions} portions</span>`
+      }
+    </div>`).join('');
+  const resultEl=document.getElementById('csv-result');
+  const formatEl=document.getElementById('csv-format-card');
+  if(resultEl)resultEl.style.display='block';
+  if(formatEl)formatEl.style.display='none';
+}
+
+function confirmImport(){
+  if(csvType==='ingredients'){
+    ingredients=[...ingredients,...csvParsed];
+  } else {
+    recettes=[...recettes,...csvParsed];
+  }
+  persist();
+  alert(`✅ ${csvParsed.length} ${csvType==='ingredients'?'ingrédients':'recettes'} importés avec succès !`);
+  cancelImport();
+  if(csvType==='ingredients'){goTab('ingredients');}
+  else{goTab('recettes');}
+}
+
+function cancelImport(){
+  csvParsed=[];
+  const resultEl=document.getElementById('csv-result');
+  const formatEl=document.getElementById('csv-format-card');
+  const fileEl=document.getElementById('csv-file');
+  if(resultEl)resultEl.style.display='none';
+  if(formatEl)formatEl.style.display='block';
+  if(fileEl)fileEl.value='';
+}
+
+function downloadCsvModel(){
+  const data='nom,unite,categorie,allergenes,kcal,proteines,glucides,lipides,sel,sucres,prix_kg
+"Farine de blé T55",g,Céréales,gluten,364,10,76,1,0.1,0.3,0.90
+"Lait entier",ml,Laitier,lait,63,3.2,4.8,3.6,0.1,4.8,0.85
+"Beurre doux",g,Laitier,lait,745,0.5,0.6,82,1.4,0.6,8.50
+"Saumon frais",g,Poissons,poisson,206,20,0,13,0.1,0,18.00
+"Sauce soja",ml,Condiments,gluten;soja,60,8,6,0.7,5.6,2,3.50';
+  const blob=new Blob([data],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='modele_ingredients_kera.csv';a.click();
+}
+
+function downloadCsvModelRecettes(){
+  const data='nom,description,categorie,portions,portionPoids,dlc,conditionStockage,fabricant,adresse,paysOrigine
+"Gratin Dauphinois","Gratin de pommes de terre à la crème","Plat chaud",4,200,3,"Conserver entre 0°C et 4°C","KERA CATERING","Paris, France","France"
+"Poulet rôti","Poulet entier rôti aux herbes","Plat chaud",4,250,2,"Conserver entre 0°C et 4°C","KERA CATERING","Paris, France","France"';
+  const blob=new Blob([data],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='modele_recettes_kera.csv';a.click();
+}
+
+// ═══════════════════════════════════════════════════
+// IMPRESSION ÉTIQUETTE
+// ═══════════════════════════════════════════════════
+function imprimerEtiquette(){
+  const id=parseInt(document.getElementById('etiq-sel').value);
+  const r=recettes.find(x=>x.id===id);
+  if(!r){alert('Sélectionne une recette d'abord.');return;}
+  const n=calcNutri(r.ingredients,r.portionPoids);
+  const al=getAllerg(r.ingredients);
+  const dlcDate=addDays(r.dlc);
+  const ingsOrd=(r.ingredients||[]).sort((a,b)=>b.qte-a.qte);
+
+  const printEl=document.getElementById('print-area');
+  printEl.innerHTML=`
+    <div style="font-family:Arial,sans-serif;max-width:400px;margin:0 auto;padding:10mm">
+      <div style="font-size:8px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px">KERA CATERING — Étiquette INCO conforme Règlement UE n°1169/2011</div>
+      <div style="border:2px solid #000;border-radius:4px;padding:12px;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:800;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px">${esc(r.nom)}</div>
+        <div style="margin-bottom:8px">
+          <div style="font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#444;margin-bottom:3px">Ingrédients</div>
+          <div style="font-size:8px;line-height:1.5">${ingsOrd.map((i,idx)=>{const ing=ingredients.find(b=>b.id===i.ingredientId);if(!ing)return'';return(idx?', ':'')+(ing.allergenes.length?`<strong>${esc(ing.nom)}</strong>`:esc(ing.nom));}).join('')}</div>
+        </div>
+        ${al.size>0?`<div style="background:#f0f0f0;border:1px solid #ccc;border-radius:3px;padding:5px 7px;font-size:8px;font-weight:700;margin-bottom:8px"><strong>Contient :</strong> ${[...al].map(a=>AL[a]).join(', ')}</div>`:''}
+        <div style="border:1px solid #ccc;border-radius:3px;overflow:hidden;margin-bottom:8px">
+          <div style="background:#111;color:#fff;padding:4px 7px;font-size:7px;font-weight:700;text-transform:uppercase">Valeurs nutritionnelles moyennes pour ${r.portionPoids}g</div>
+          ${[['Énergie',`${n.kj} kJ / ${n.kcal} kcal`,false],['Matières grasses',`${n.lip} g`,false],['dont acides gras saturés',`${n.agSat} g`,true],['Glucides',`${n.gluc} g`,false],['dont sucres',`${n.suc} g`,true],['Protéines',`${n.prot} g`,false],['Sel',`${n.sel} g`,false]].map(([k,v,sub])=>`<div style="display:flex;justify-content:space-between;padding:${sub?'2px 7px 2px 16px':'3px 7px'};border-top:1px solid #eee;font-size:7px;color:${sub?'#666':'#000'}"><span>${k}</span><span style="font-weight:600">${v}</span></div>`).join('')}
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:7px;margin-bottom:4px">
+          <span><strong>Poids net :</strong> ${r.portionPoids*r.portions}g (${r.portions} portions)</span>
+          <span><strong>Origine :</strong> ${esc(r.paysOrigine)}</span>
+        </div>
+        <div style="font-size:7px;margin-bottom:4px"><strong>À consommer jusqu'au :</strong> ${fmtDate(dlcDate)}</div>
+        <div style="font-size:7px;margin-bottom:4px"><strong>Conservation :</strong> ${esc(r.conditionStockage)}</div>
+        <div style="font-size:6px;color:#777;border-top:1px solid #ddd;margin-top:6px;padding-top:5px">
+          Fabriqué par : ${esc(r.fabricant)} — ${esc(r.adresse)}<br>
+          Allergènes en <strong>GRAS</strong> dans la liste des ingrédients · Règlement (UE) n°1169/2011
+        </div>
+      </div>
+    </div>`;
+  window.print();
 }
 
 // ═══════════════════════════════════════════════════
